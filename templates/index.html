@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Flack
+{% endblock %}
+
+{% block body %}
+<head>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function(){
+			var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+			socket.on('connect', function(){
+				document.querySelector('#reply').onclick = function(){
+					const message = document.querySelector('#comment_box').value;
+					socket.emit('submit', message, "{{ room }}");
+					document.querySelector('#comment_box').value = "";
+				}
+			});
+			
+			socket.on('send reply', function(data) {
+				var new_message = document.createElement("li");
+				new_message.appendChild(document.createTextNode(data));
+				
+				document.querySelector('#chat_window').appendChild(new_message);
+			});
+			
+			document.querySelector('#rooms').onchange = function(){
+				document.querySelector('#chat_room_title').innerHTML = document.querySelector('#rooms').value;
+			
+			}
+		});
+	</script>
+</head>
+	<style>
+		.channel_link {
+			color: white;
+		}
+		h1 {
+			color: rgb(255,255,255);
+		}
+	</style>
+    <h1>Welcome {{ user_id }} </h1>
+	<div>
+		<ul>
+			<li>
+				<a class="channel_link" href="{{url_for('create_channel')}}">Create Channel</a>
+			</li>
+			<li>
+				<a class="channel_link" href="{{url_for('logout')}}">Log Out</a>
+			</li>
+			{% for r in chat_rooms %}
+				<li>
+					<a class="channel_link" href="{{url_for('channel_view', room=r)}}" value="{{ r }}">{{ r }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}

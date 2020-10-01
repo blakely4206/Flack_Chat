@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Flack
+{% endblock %}
+
+{% block body %}
+<head>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function(){
+			var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+			socket.on('connect', function(){
+				document.querySelector('#reply').onclick = function(){
+					const message = document.querySelector('#comment_box').value ;
+					socket.emit('submit', message, "{{ room }}");
+					document.querySelector('#comment_box').value = "";
+				}
+			});
+			
+			socket.on('send reply', function(data) {
+				var new_message = document.createElement("tr");
+				new_message.appendChild(document.createTextNode(data));
+				
+				document.querySelector('#chat_window').appendChild(new_message);
+			});
+			
+			document.querySelector('#rooms').onchange = function(){
+				document.querySelector('#chat_room_title').innerHTML = document.querySelector('#rooms').value;
+			
+			}
+		});
+	</script>
+</head>
+	<style>
+		.channel_link {
+			color: white;
+		}
+		h1 {
+			color: rgb(255,255,255);
+		}
+		a {
+			color: rgb(255,255,255);
+		}
+		.convo {
+			background-color: white;
+			border: 1px solid rgb(211,194,178);
+			width: 70%;
+			word-wrap: break-word;
+			margin: auto;
+			height: 69%;
+		}		
+		.screen_name {
+			color: red;
+		}
+	</style>
+<div>
+<a href="{{url_for('index')}}">Home</a>
+	<h1> {{ room }} </h1>
+		<ul>
+			{% for r in chat_rooms %}
+				<li>
+					<a href="{{url_for('channel_view', room=r)}}" value="{{ r }}">{{ r }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="convo" >
+		<label id="chat_room_title"></label>
+		<table id="chat_window">
+		{% for m in chat_log %}
+			{% set name = m.split('::') %}
+			<tr>
+				<td>
+					<span style="color:red">{{ name[0] }}</span>
+				</td>
+				<td>
+					<span>{{ name[1] }}</span>
+				</td>
+			</tr>
+			
+		{% endfor %}
+		</table>
+		<input id="comment_box" placeholder="Reply"/>
+		<button id="reply">Reply</button>
+	</div>
+
+
+{% endblock %}
