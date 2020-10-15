@@ -4,6 +4,7 @@ from flask import Flask, session, render_template, request, redirect, url_for
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_socketio import SocketIO, emit
+from models import User
 
 app = Flask(__name__)
 
@@ -23,17 +24,13 @@ chat_log2 = []
 
 chat_rooms = {}
 
-chat_rooms["Main"] = chat_log
-chat_rooms["Forum B"] = chat_log1
-chat_rooms["Forum C"] = chat_log2
-
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/", methods=["GET", "POST"])
 def login():    
-    if request.method == "GET":
+    if request.method == "GET":        
         if session.get("user_id") != None:
             if session.get("current_channel") != None:
                 url = 'channel/' + session["current_channel"]
@@ -44,12 +41,24 @@ def login():
             return render_template("login.html")
     else:
         session["user_id"] = request.form.get("user_id")
-        return redirect("/index")
+        name = session.get("user_id")
+        rows = db.execute("SELECT * FROM users where name = :name;", {"name": name})
+        result = rows.fetchone()
+        if(result == None):
+            print("YES!")
+            return redirect("/create")
+        else:
+            print("NO!")
+            return redirect("/index")
         
 @app.route("/index", methods=["GET", "POST"])
 def index():
     if session.get("user_id") != None:
-        # todo select all current chat rooms
+        # todo select all current chat rooms        
+     #   rooms = db.execute("SELECT name FROM chatroom;")
+    #    for name in rooms:
+    #        name = mame.replace("(", "").replace(")", "").replace("'", "")
+            
         return render_template("index.html", user_id = session["user_id"], chat_log = chat_log, chat_rooms = chat_rooms)
     else:
         return redirect("/")

@@ -1,0 +1,23 @@
+.channel_link {
+    color: white;
+}
+h1 {
+    color: rgb(255,255,255);
+}
+a {
+    color: rgb(255,255,255);
+}
+.convo {
+    background-color: white;
+    border: 1px solid rgb(211,194,178);
+    width: 70%;
+    word-wrap: break-word;
+    margin: auto;
+    height: 69%;
+}	
+.username {
+    color: purple;
+}
+.reply {
+    color: blue;
+}

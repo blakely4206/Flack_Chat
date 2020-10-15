@@ -1,19 +1,18 @@
 import os
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
 
-db = SQLAlchemy()
-
-
-class User(db.Model):
+class User(Base):
     __tablename__ = "users"
-    id = db.Column(db.String, primary_key=True)
-    user_name = db.Column(db.String, nullable=False)
-    user_password = db.Column(db.String, nullable=False)
+    id = Column(String, primary_key=True)
+    user_name = Column(String, nullable=False)
+    user_password = Column(String, nullable=False)
 
-class ChatRoom(db.Model):
+class ChatRoom(Base):
     __tablename__ = "chatroom"
-    id = db.Column(db.String, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    creator = db.Column(db.String, nullable=False)
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    creator = Column(String, nullable=False)

@@ -19,10 +19,32 @@
 			});
 			
 			socket.on('send reply', function(data) {
-				var new_message = document.createElement("tr");
-				new_message.appendChild(document.createTextNode(data));
+				var table_row = document.createElement("tr");
+				var table_data = document.createElement("td");
+
+				var username_td = document.createElement("span");
+				var reply_td = document.createElement("span");
+
+				var text = data.split("::");
+
+		//		username_td.style.cssText = "color:purple;";
+		//		reply_td.style.cssText = "color:orange;";
+
+				username_td.className = "username";
+				reply_td.className = "reply";
+
+				username_td.appendChild(document.createTextNode(text[0]))
+				reply_td.appendChild(document.createTextNode(text[1]));
+
+				table_data.appendChild(username_td).appendChild(reply_td);
+				table_row.appendChild(table_data);
+
+				document.querySelector('#chat_body').appendChild(table_row);
+
+			//	var new_message = document.createElement("tr");
+			//	new_message.appendChild(document.createTextNode(data));
 				
-				document.querySelector('#chat_window').appendChild(new_message);
+			//	document.querySelector('#chat_body').appendChild(new_message);
 			});
 			
 			document.querySelector('#rooms').onchange = function(){
@@ -31,29 +53,35 @@
 			}
 		});
 	</script>
+	<link rel="stylesheet" href="/static/channel_style.css">
 </head>
-	<style>
-		.channel_link {
-			color: white;
-		}
-		h1 {
-			color: rgb(255,255,255);
-		}
-		a {
-			color: rgb(255,255,255);
-		}
-		.convo {
-			background-color: white;
-			border: 1px solid rgb(211,194,178);
-			width: 70%;
-			word-wrap: break-word;
-			margin: auto;
-			height: 69%;
-		}		
-		.screen_name {
-			color: red;
-		}
-	</style>
+
+<style>
+	.channel_link {
+    	color: white;
+	}
+	h1 {
+    	color: rgb(255,255,255);
+	}
+	a {
+    	color: rgb(255,255,255);
+	}
+	.convo {
+    	background-color: white;
+    	border: 1px solid rgb(211,194,178);
+    	width: 70%;
+    	word-wrap: break-word;
+    	margin: auto;
+    	height: 69%;
+	}	
+	.username {
+    	color: purple;
+	}
+	.reply {
+	    color: blue;
+	}
+</style>
+
 <div>
 <a href="{{url_for('index')}}">Home</a>
 	<h1> {{ room }} </h1>
@@ -67,23 +95,21 @@
 	</div>
 	<div class="convo" >
 		<label id="chat_room_title"></label>
-		<table id="chat_window">
-		{% for m in chat_log %}
-			{% set name = m.split('::') %}
-			<tr>
-				<td>
-					<span style="color:red">{{ name[0] }}</span>
-				</td>
-				<td>
-					<span>{{ name[1] }}</span>
-				</td>
-			</tr>
-			
-		{% endfor %}
+		<table class="chat" id="chat_window">
+			<tbody id="chat_body">
+				{% for m in chat_log %}
+				{% set name = m.split('::') %}
+				<tr>
+					<td>
+						<span class="username">{{ name[0] }}</span>				
+						<span class="reply">{{ name[1] }}</span>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>				
 		</table>
 		<input id="comment_box" placeholder="Reply"/>
 		<button id="reply">Reply</button>
 	</div>
-
 
 {% endblock %}
